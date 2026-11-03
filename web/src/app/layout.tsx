@@ -8,7 +8,11 @@ export const metadata: Metadata = {
   description: "Organize o que você já leu e o que quer ler.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html lang="pt-BR">
       <body className="flex min-h-screen flex-col antialiased">
