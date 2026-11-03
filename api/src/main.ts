@@ -18,6 +18,11 @@ async function bootstrap() {
   const config = app.get(ConfigService);
   const port = config.getOrThrow<number>('PORT');
 
+  app.enableCors({
+    origin: config.getOrThrow<string>('CORS_ORIGIN'),
+    methods: ['GET', 'POST', 'DELETE', 'PATCH'],
+  });
+
   app.useGlobalPipes(new StandardSchemaValidationPipe());
 
   const swaggerConfig = new DocumentBuilder()
