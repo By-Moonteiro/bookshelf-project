@@ -7,3 +7,19 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum BookStatus {
+  WANT_TO_READ
+  READING
+  READ
+}
+
+model Book {
+  id        String     @id @default(uuid())
+  title     String
+  author    String
+  status    BookStatus
+  rating    Int?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
