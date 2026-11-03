@@ -4,8 +4,9 @@ import {
   ExceptionFilter,
   HttpException,
   Logger,
-} from "@nestjs/common";
-import { HttpAdapterHost } from "@nestjs/core";
+} from '@nestjs/common';
+import { HttpAdapterHost } from '@nestjs/core';
+import { Prisma } from '../../generated/prisma/client.js';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -22,14 +23,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       const exceptionResponse = exception.getResponse();
 
       const body =
-        typeof exceptionResponse === "string"
+        typeof exceptionResponse === 'string'
           ? { message: exceptionResponse }
           : exceptionResponse;
 
       httpAdapter.reply(
         response,
         {
-          ...(typeof body === "object" && body !== null ? body : {}),
+          ...(typeof body === 'object' && body !== null ? body : {}),
           statusCode: status,
           timestamp: new Date().toISOString(),
         },
@@ -39,8 +40,26 @@ export class HttpExceptionFilter implements ExceptionFilter {
       return;
     }
 
+    if (
+      exception instanceof Prisma.PrismaClientKnownRequestError &&
+      exception.code === 'P2025'
+    ) {
+      httpAdapter.reply(
+        response,
+        {
+          statusCode: 404,
+          timestamp: new Date().toISOString(),
+          error: 'Not Found',
+          message: 'Resource not found',
+        },
+        404,
+      );
+
+      return;
+    }
+
     const message =
-      exception instanceof Error ? exception.message : "Unhandled exception";
+      exception instanceof Error ? exception.message : 'Unhandled exception';
     const stack = exception instanceof Error ? exception.stack : undefined;
 
     this.logger.error(message, stack);
@@ -50,7 +69,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       {
         statusCode: 500,
         timestamp: new Date().toISOString(),
-        message: "Internal server error",
+        message: 'Internal server error',
       },
       500,
     );
