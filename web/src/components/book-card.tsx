@@ -1,5 +1,12 @@
+import Link from "next/link";
+import { buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from "@/components/ui/card";
 import { BOOK_STATUS_LABELS, type Book } from "@/types/book";
 
 export function BookCard({ book }: { book: Book }) {
@@ -16,6 +23,15 @@ export function BookCard({ book }: { book: Book }) {
             <p aria-label={`Nota ${book.rating} de 5`}>★ {book.rating}/5</p>
           )}
         </CardContent>
+        <CardFooter className="gap-2">
+          <Link
+            href={`/books/${book.id}/edit`}
+            aria-label={`Editar ${book.title}`}
+            className={buttonVariants({ variant: "outline", size: "sm" })}
+          >
+            Editar
+          </Link>
+        </CardFooter>
       </Card>
     </article>
   );

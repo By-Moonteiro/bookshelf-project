@@ -7,11 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { bookFormSchema, type BookFormValues } from "@/schemas/book";
-import { createBook } from "@/services/books";
-import { BOOK_STATUSES, BOOK_STATUS_LABELS } from "@/types/book";
+import { createBook, updateBook } from "@/services/books";
+import { BOOK_STATUSES, BOOK_STATUS_LABELS, Book } from "@/types/book";
 
-export function BookForm() {
+type BookFormProps = { book?: Book };
+
+export function BookForm({ book }: BookFormProps) {
   const router = useRouter();
+  const isEditing = !!book;
 
   const {
     register,
@@ -21,16 +24,20 @@ export function BookForm() {
   } = useForm<BookFormValues>({
     resolver: zodResolver(bookFormSchema),
     defaultValues: {
-      title: "",
-      author: "",
-      status: "WANT_TO_READ",
-      rating: null,
+      title: book?.title ?? "",
+      author: book?.author ?? "",
+      status: book?.status ?? "WANT_TO_READ",
+      rating: book?.rating ?? null,
     },
   });
 
   async function onSubmit(values: BookFormValues) {
     try {
-      await createBook(values);
+      if (book) {
+        await updateBook(book.id, values);
+      } else {
+        await createBook(values);
+      }
       router.push("/books");
       router.refresh();
     } catch {
@@ -113,7 +120,11 @@ export function BookForm() {
       )}
 
       <Button type="submit" disabled={isSubmitting}>
-        {isSubmitting ? "Salvando..." : "Salvar livro"}
+        {isSubmitting
+          ? "Salvando..."
+          : isEditing
+            ? "Salvar alterações"
+            : "Salvar livro"}
       </Button>
     </form>
   );
