@@ -8,6 +8,7 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { BOOK_STATUS_LABELS, type Book } from "@/types/book";
+import { DeleteBookButton } from "@/components/delete-book-button";
 
 export function BookCard({ book }: { book: Book }) {
   return (
@@ -31,6 +32,8 @@ export function BookCard({ book }: { book: Book }) {
           >
             Editar
           </Link>
+
+          <DeleteBookButton book={book} />
         </CardFooter>
       </Card>
     </article>
